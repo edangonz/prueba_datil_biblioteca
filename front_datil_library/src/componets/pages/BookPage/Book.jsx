@@ -1,8 +1,13 @@
 import React from 'react';
+import { Container } from 'react-bootstrap';
 
 class BookComponent extends React.Component {
     render(){
-        return (<p>Hola esto es una prueba</p>)
+        return (
+            <Container>
+                Hola esto es el catalogo de libros
+            </Container>
+        );
     };
 }
 

@@ -1,9 +1,13 @@
-.main-container{
+.main-container {
     height: 100vh;
     background-color: #aaa;
 }
 
-.main-container .container-login{
+.main-container.main-container-flex {
+    display: flex;
+}
+
+.main-container .container-login {
     padding: 2rem;
     background: white;
     border-radius: 0.5rem;
@@ -13,4 +17,27 @@
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.menu-container {
+    width: 200px;
+    background-color: white;
+}
+
+.menu-container a{
+    display: inline-block;
+    padding: 1rem;
+    background-color: white;
+    width: 100%;
+    box-sizing: border-box;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.menu-container a:hover{
+    background-color: aliceblue;
+}
+
+.content-container {
+    flex-grow: 1;
 }
