@@ -7,6 +7,8 @@ from django.contrib.auth.models import User
 from rest_framework.parsers import JSONParser
 from rest_framework import status, authentication, permissions 
 
+import datetime
+
 # Create your views here.
 
 class ListBooks(APIView):
@@ -89,7 +91,7 @@ class BookReservaApi(APIView):
 
     def get_object_reserva(self, code_book, id_user):
         try:
-            return BorrowedBook.objects.get(code_book=code_book, id_user=id_user, state_reservation=True)
+            return BorrowedBook.objects.get(code_book=code_book, id_user=id_user)
         except BorrowedBook.DoesNotExist:
             return None
     
@@ -139,6 +141,53 @@ class BookReservaApi(APIView):
         for b in books:
             b.state_reservation = False
             b.state_return = True
+            b.broadcast_date = datetime.date.today()
             b.save()
    
         return Response({'Message' : "update"}, status=status.HTTP_202_ACCEPTED)
+
+    def delete(self, request):
+        reserva = BorrowedBook.objects.get(pk=request.GET.get("id_borrowed_book"))
+        if reserva and reserva.state_reservation and reserva.code_book.code_book == request.GET.get("code_book") and reserva.id_user.id == request.user.id:
+            reserva.delete()
+
+            book = self.get_object_book(request.GET.get("code_book"))
+            book.stock =  book.stock + 1
+            book.save()
+
+            return Response({'message' : "Delete book"}, status=status.HTTP_202_ACCEPTED)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+class BookBorrowedApi(APIView):
+    parser_classes = [JSONParser]
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get(self, request):
+        books = BorrowedBook.objects.filter(id_user=request.user.id, state_return=True)
+        serializer = BorrowedBookSerializer(books, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class BookBorrowedAdminApi(APIView):
+    parser_classes = [JSONParser]
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAdminUser]
+    
+    def get(self, request):
+        books = BorrowedBook.objects.filter(state_return=True)
+        serializer = BorrowedBookSerializer(books, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def delete(self, request):
+        reserva = BorrowedBook.objects.get(pk=request.GET.get("id_borrowed_book"))
+        if reserva and reserva.state_return:
+            book = Book.objects.get(code_book=reserva.code_book.code_book)
+            book.stock =  book.stock + 1
+            book.save()
+            
+            reserva.delete()
+
+            return Response({'message' : "Delete book"}, status=status.HTTP_202_ACCEPTED)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)

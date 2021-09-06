@@ -7,6 +7,7 @@ import NavbarComponent from './componets/Navbar/Navbar';
 import AdminComponent from './componets/pages/BookPage/Admin';
 import BookComponent from './componets/pages/BookPage/Book';
 import BorrowedBookComponent from './componets/pages/BookPage/Borrowed';
+import BorrowedAdminBookComponent from './componets/pages/BookPage/BorrowedAdmin';
 import ReservedBookComponent from './componets/pages/BookPage/Reserved';
 
 import Login from './componets/pages/Login/Login';
@@ -46,8 +47,9 @@ class App extends React.Component {
           <div className="main-container main-container-flex" style={{display : !this.state.user ? "none" : ""}}>
             {this.state.user && <div className="menu-container">
               <Link to="/app">Libros</Link>
-              <Link to="/reserved">Libros reservados</Link>
-              <Link to="/borrowed">Libros prestados</Link>
+              {!this.state.user.is_superuser && <Link to="/reserved">Libros reservados</Link>}
+              {!this.state.user.is_superuser && <Link to="/borrowed">Libros prestados</Link>}
+              {this.state.user.is_superuser && <Link to="/borrowedadmin">Libros prestados</Link>}
               {this.state.user.is_superuser && <Link to="/admin">Administrar libros</Link>}
             </div>}
             <div className="content-container">
@@ -72,6 +74,14 @@ class App extends React.Component {
                   path="/borrowed"
                   user={this.state.user}
                   component={BorrowedBookComponent}
+                />
+
+                <ProtectedRoute
+                  exact
+                  path="/borrowedadmin"
+                  user={this.state.user}
+                  only_admin={true}
+                  component={BorrowedAdminBookComponent}
                 />
 
                 <ProtectedRoute

@@ -32,7 +32,8 @@ class BookComponent extends React.Component {
     }
 
     componentDidMount() {
-        this.getAllBooks()
+        if(!this.state.books.length)
+            this.getAllBooks()
     }
 
     render(){

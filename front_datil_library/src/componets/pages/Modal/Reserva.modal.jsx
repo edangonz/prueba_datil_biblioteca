@@ -15,7 +15,7 @@ class ReservaModal extends React.Component {
         if(res)
             this.props.aceptedReserva();
         else {
-            this.setState({ message : "Ocurrió un error o ya existe una reserva de este libro." });
+            this.setState({ message : "Ocurrió un error o ya existe una reserva o prestamo del libro." });
             setTimeout(() => {
                 this.setState({ message : undefined });
             }, 3000);

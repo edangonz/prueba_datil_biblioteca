@@ -41,4 +41,8 @@ class BorrowedBook(models.Model):
 
     @property
     def title(self):
-        return f'{self.code_book.title}' 
+        return f'{self.code_book.title}'
+
+    @property
+    def username(self):
+        return f'{self.id_user.username}' 
