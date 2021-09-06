@@ -3,13 +3,15 @@ import React from 'react'
 import { withRouter } from "react-router";
 
 import { Button, Col, Form, InputGroup, Row, Spinner } from 'react-bootstrap';
-import { loginWithCredentials, loginWithToken } from '../../../services/login.service';
+import { createUser, loginWithCredentials, loginWithToken } from '../../../services/login.service';
 
 class Login extends React.Component {
     state = {
         validated : false,
         loading : false,
-        error_login : false
+        error_login : false,
+
+        is_create_user : false,
     };
 
     async handleSubmit (event) {
@@ -17,7 +19,7 @@ class Login extends React.Component {
         event.preventDefault();
         event.stopPropagation();
 
-        this.setState({validated : true});
+        this.setState({validated : true, error_login : false});
         
         if (form.checkValidity()) {
             this.setState({loading : true})
@@ -25,15 +27,31 @@ class Login extends React.Component {
             let username = form.form_username.value;
             let password = form.form_password.value;
 
-            let res = await loginWithCredentials(username, password);
-
-            if(res){
-                this.setState({loading : false, validated : false, error_login : false})
-                await this.props.isLogin();
-                this.props.history.push("/app")
-            } else 
-                this.setState({loading : false, error_login : true})
+            if (!this.state.is_create_user)
+                await this.initSesion(username, password);
+            else
+                await this.registerUser(username, password);
         } 
+    }
+
+    async initSesion(username, password) {
+        let res = await loginWithCredentials(username, password);
+
+        if(res){
+            this.setState({loading : false, validated : false, error_login : false, is_create_user : false})
+            await this.props.isLogin();
+            this.props.history.push("/app")
+        } else 
+            this.setState({loading : false, error_login : true})
+    }
+
+    async registerUser(username, password) {
+        let res = await createUser(username, password);
+
+        if(res)
+            await this.initSesion(username, password);
+        else
+            this.setState({loading : false, error_login : true})
     }
 
     async isLogin(){
@@ -58,7 +76,6 @@ class Login extends React.Component {
                         <Form.Group as={Col} md="12" controlId="form_username">
                             <Form.Label>Username</Form.Label>
                             <InputGroup >
-                                <InputGroup.Text id="inputGroupPrepend"></InputGroup.Text>
                                 <Form.Control
                                     required
                                     type="text"
@@ -72,7 +89,6 @@ class Login extends React.Component {
                         <Form.Group as={Col} md="12" controlId="form_password">
                             <Form.Label>Contraseña</Form.Label>
                             <InputGroup>
-                                <InputGroup.Text id="inputGroupPrepend"></InputGroup.Text>
                                 <Form.Control
                                     required
                                     type="password"
@@ -81,10 +97,20 @@ class Login extends React.Component {
                             </InputGroup>
                         </Form.Group>
                     </Row>
-                   
-                    <Button type="submit">Iniciar sesion</Button>
-                    {this.state.loading && <Spinner animation="border" />}
-                    {this.state.error_login && <Form.Control.Feedback type="invalid">Credenciales incorrectas.</Form.Control.Feedback>}
+                   <div className="container-center">
+                        <Button type="submit">
+                            {!this.state.is_create_user ? "Iniciar sesión" : "Crear cuenta"}
+                        </Button>
+                   </div>
+                   <div className="container-center">
+                        {this.state.loading && <Spinner animation="border" />}
+                        {this.state.error_login && <span>
+                            {this.state.is_create_user ? "Error al crear usuario" : "Credenciales incorrectas."}
+                        </span>}
+                    </div>
+                    <div className="container-center" onClick={() => this.setState({ is_create_user : !this.state.is_create_user })}>
+                        <span className="text-option">{this.state.is_create_user ? "Iniciar sesion" : "Crear una cuenta"}</span>
+                    </div>
                 </Form>
                 </div>
             </div>

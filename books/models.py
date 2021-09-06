@@ -38,3 +38,7 @@ class BorrowedBook(models.Model):
 
     def __str__(self):
         return '{0}-{1}'.format(self.id_user, self.code_book)
+
+    @property
+    def title(self):
+        return f'{self.code_book.title}' 

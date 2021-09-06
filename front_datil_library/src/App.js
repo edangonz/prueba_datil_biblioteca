@@ -1,7 +1,10 @@
 import React from 'react';
+import { Container } from 'react-bootstrap';
 
 import { BrowserRouter, Link, Route } from 'react-router-dom';
 import './App.css';
+import NavbarComponent from './componets/Navbar/Navbar';
+import AdminComponent from './componets/pages/BookPage/Admin';
 import BookComponent from './componets/pages/BookPage/Book';
 import BorrowedBookComponent from './componets/pages/BookPage/Borrowed';
 import ReservedBookComponent from './componets/pages/BookPage/Reserved';
@@ -40,33 +43,45 @@ class App extends React.Component {
           <Login setUserLogin={(user) => this.setUserLogin(user)} isLogin={() => this.isLogin()}/>
         </Route>
         {!this.state.loading_user &&
-          <div className="main-container main-container-flex">
-            <div className="menu-container">
+          <div className="main-container main-container-flex" style={{display : !this.state.user ? "none" : ""}}>
+            {this.state.user && <div className="menu-container">
               <Link to="/app">Libros</Link>
               <Link to="/reserved">Libros reservados</Link>
               <Link to="/borrowed">Libros prestados</Link>
-            </div>
+              {this.state.user.is_superuser && <Link to="/admin">Administrar libros</Link>}
+            </div>}
             <div className="content-container">
-              <ProtectedRoute
-                exact
-                path="/app"
-                user={this.state.user}
-                component={BookComponent}
-              />
+              {this.state.user && <NavbarComponent user={this.state.user} closeSesion={() => this.setState({ user : undefined, loading_user : true})}/>}
+              <Container>
+                <ProtectedRoute
+                  exact
+                  path="/app"
+                  user={this.state.user}
+                  component={BookComponent}
+                />
 
-              <ProtectedRoute
-                exact
-                path="/reserved"
-                user={this.state.user}
-                component={ReservedBookComponent}
-              />
+                <ProtectedRoute
+                  exact
+                  path="/reserved"
+                  user={this.state.user}
+                  component={ReservedBookComponent}
+                />
 
-              <ProtectedRoute
-                exact
-                path="/borrowed"
-                user={this.state.user}
-                component={BorrowedBookComponent}
-              />
+                <ProtectedRoute
+                  exact
+                  path="/borrowed"
+                  user={this.state.user}
+                  component={BorrowedBookComponent}
+                />
+
+                <ProtectedRoute
+                  exact
+                  path="/admin"
+                  user={this.state.user}
+                  only_admin={true}
+                  component={AdminComponent}
+                />
+              </Container>
             </div>
           </div>
           }

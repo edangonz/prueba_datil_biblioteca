@@ -22,6 +22,24 @@ export async function loginWithCredentials(username, password) {
     }
 }
 
+export async function createUser(username, password) {
+
+    try {
+        await axios.post(
+            url + "user/create/",
+            {
+                username : username,
+                email : "ejemplo@email.com",
+                password : password
+            },
+        );
+
+        return true;
+    } catch (error) {
+        return false;
+    }
+}
+
 export async function loginWithToken(){
     try {
         let token = cookie.load("token");
