@@ -15,8 +15,8 @@ SECRET_KEY = "CHANGE_ME!!!! (P.S. the SECRET_KEY environment variable will be us
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = []
-CORS_ORIGIN_ALLOW_ALL=True
+ALLOWED_HOSTS = ["datillibrary.herokuapp.com", "localhost", "127.0.0.1"]
+CORS_ORIGIN_ALLOW_ALL=False
 
 # Application definition
 
@@ -72,14 +72,14 @@ WSGI_APPLICATION = "datil_library.wsgi.application"
 
 DATABASES = {
     "default": {
-        #"ENGINE" : "django.db.backends.sqlite3",
-        #"NAME": os.path.join(BASE_DIR, "db.sqlite3")
-        'ENGINE': 'django.db.backends.mysql',
-        'HOST': 'localhost',                     
-        'PORT': '3306',
-        'NAME': 'datil_library_db',
-        'USER': 'root',                     
-        'PASSWORD': 'yoestudio10'
+        "ENGINE" : "django.db.backends.sqlite3",
+        "NAME": os.path.join(BASE_DIR, "db.sqlite3")
+        #'ENGINE': 'django.db.backends.mysql',
+        #'HOST': 'localhost',                     
+        #'PORT': '3306',
+        #'NAME': 'datil_library_db',
+        #'USER': 'root',                     
+        #'PASSWORD': 'yoestudio10'
     }
 }
 
