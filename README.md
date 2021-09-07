@@ -19,6 +19,7 @@ fecha de devolución).
 ## Deployment
 
 * [Library](https://datillibrary.herokuapp.com/) - WebSite
+* Credenciales de prueba para cuenta administrador - username : admindatillibrary, password : admindatil
 
 ## Built With
 
